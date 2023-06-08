@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+    <!--5. table style-->
+    <style>
+        .el-table .warning-row {
+            background: oldlace;
+        }
+
+        .el-table .success-row {
+            background: #f0f9eb;
+        }
+    </style>
+
+
+</head>
+
+<body>
+<!--3. create related binding div-->
+<div id="app">
+
+    <!--6. search form-->
+    <el-form :inline="true" :model="brand" class="demo-form-inline">
+
+        <el-form-item label="Current Status">
+            <el-select v-model="brand.status" placeholder="Current Status">
+                <el-option label="ON" value="1"></el-option>
+                <el-option label="OFF" value="0"></el-option>
+            </el-select>
+        </el-form-item>
+
+        <el-form-item label="Company Name">
+            <el-input v-model="brand.companyName" placeholder="Company Name"></el-input>
+        </el-form-item>
+
+        <el-form-item label="Brand Name">
+            <el-input v-model="brand.brandName" placeholder="Brand Name"></el-input>
+        </el-form-item>
+
+        <el-form-item>
+            <el-button type="primary" @click="onSubmit">Search</el-button>
+        </el-form-item>
+
+    </el-form>
+
+    <!--7. bulk delete and add button-->
+    <el-row>
+        <el-button type="danger" plain>Bulk Delete</el-button>
+        <el-button type="primary" plain @click="dialogVisible = true">Add</el-button>
+    </el-row>
+
+
+    <!--8. dialog form for adding data-->
+    <el-dialog
+            title="Edit Brand"
+            :visible.sync="dialogVisible"
+            width="30%"
+            :before-close="handleClose">
+
+        <!--9. dialog's form-->
+        <el-form ref="form" :model="brand" label-width="80px">
+            <el-form-item label="Brand Name" label-width="125px">
+                <el-input v-model="brand.brandName"></el-input>
+            </el-form-item>
+
+            <el-form-item label="Company Name" label-width="125px">
+                <el-input v-model="brand.companyName"></el-input>
+            </el-form-item>
+
+            <el-form-item label="Ordered" label-width="125px">
+                <el-input v-model="brand.ordered"></el-input>
+            </el-form-item>
+
+            <el-form-item label="Note" label-width="125px">
+                <el-input type="textarea" v-model="brand.description"></el-input>
+            </el-form-item>
+
+            <el-form-item label="Status" label-width="125px">
+                <el-switch
+                        v-model="brand.status"
+                        active-value="1"
+                        inactive-value="0"
+                ></el-switch>
+            </el-form-item>
+
+
+            <el-form-item>
+                <el-button type="primary" @click="addBrand">Submit</el-button>
+                <el-button @click="dialogVisible = false">Cancel</el-button>
+            </el-form-item>
+
+        </el-form>
+
+
+    </el-dialog>
+
+    <!--4. table-->
+    <template>
+        <el-table
+                :data="tableData"
+                style="width: 100%"
+                :row-class-name="tableRowClassName"
+                @selection-change="handleSelectionChange">
+
+
+            <el-table-column
+                    type="selection"
+                    width="55">
+            </el-table-column>
+
+
+            <el-table-column
+                    type="index"
+                    width="50">
+            </el-table-column>
+
+            <el-table-column
+                    align="center"
+                    prop="brandName"
+                    label="Brand Name">
+            </el-table-column>
+
+            <el-table-column
+                    align="center"
+                    prop="companyName"
+                    label="Company Name">
+            </el-table-column>
+
+            <el-table-column
+                    align="center"
+                    prop="order"
+                    label="Order">
+            </el-table-column>
+
+            <el-table-column
+                    align="center"
+                    prop="status"
+                    label="Current status">
+            </el-table-column>
+
+            <el-table-column
+                    align="center"
+                    label="Operation">
+
+                <el-row>
+                    <el-button type="primary">Modify</el-button>
+                    <el-button type="danger">Delete</el-button>
+                </el-row>
+
+            </el-table-column>
+
+
+        </el-table>
+    </template>
+
+    <!--10. pagination tool bar-->
+    <el-pagination
+            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange"
+            :current-page="currentPage"
+            :page-sizes="[5, 10, 15, 20]"
+            :page-size="5"
+            layout="total, sizes, prev, pager, next, jumper"
+            :total="400">
+    </el-pagination>
+
+</div>
+
+
+<!--1. import resource file-->
+<script src="js/vue.js"></script>
+<script src="https://unpkg.com/vue/dist/vue.js"></script>
+<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+<script src="https://unpkg.com/element-ui/lib/umd/locale/en.js"></script>
+<!--<script src="element-ui/lib/index.js"></script>-->
+<link rel="stylesheet" href="element-ui/lib/theme-chalk/index.css">
+
+
+
+<!--2. create core Vue object -->
+<script>
+    // Set Element UI's locale to English
+    ELEMENT.locale(ELEMENT.lang.en)
+
+    new Vue({
+        el: "#app",
+        /*table script*/
+        methods: {
+            // search method, for sending out asynchronous method
+            onSubmit() {
+                console.log(this.brand);
+            },
+
+            // add method
+            addBrand(){
+                console.log(this.brand);
+            },
+
+            tableRowClassName({row, rowIndex}) {
+                if (rowIndex === 1) {
+                    return 'warning-row';
+                } else if (rowIndex === 3) {
+                    return 'success-row';
+                }
+                return '';
+            },
+
+            //the method executed when the checkbox is selected
+            handleSelectionChange(val) {
+                this.multipleSelection = val;
+
+                console.log(this.multipleSelection)
+            },
+
+            // pagination methods
+            handleSizeChange(val) {
+                console.log(`Each Page ${val} Items`);
+            },
+            handleCurrentChange(val) {
+                console.log(`Current Page: ${val}`);
+            }
+
+        },
+        data() {
+            return {
+                // brand model data: shared by data for search form + add form in dialog box
+                brand: {
+                    status: '',
+                    brandName: '',
+                    companyName: '',
+                    id:'',
+                    ordered:'',
+                    description:''
+                },
+
+                // data collection for checkbox's selection
+                multipleSelection: [],
+
+                // data for table
+                tableData: [{
+                    brandName: 'Huawei',
+                    companyName: 'Huawei Company',
+                    order: '100',
+                    status: "1"
+                }, {
+                    brandName: 'Huawei',
+                    companyName: 'Huawei Company',
+                    order: '100',
+                    status: "1"
+                }, {
+                    brandName: 'Huawei',
+                    companyName: 'Huawei Company',
+                    order: '100',
+                    status: "1"
+                }, {
+                    brandName: 'Huawei',
+                    companyName: 'Huawei Company',
+                    order: '100',
+                    status: "1"
+                }],
+
+                //data for dialog
+                dialogVisible: false,
+
+                //data for pagination
+                currentPage: 4
+            }
+
+        }
+
+    })
+</script>
+
+</body>
+</html>
